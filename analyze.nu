@@ -29,4 +29,5 @@ def main [] {
     }
     | flatten
     | str trim
+    | to json
 }
