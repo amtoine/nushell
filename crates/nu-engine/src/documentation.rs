@@ -228,9 +228,9 @@ fn get_documentation(
             for item in table.into_iter().flatten() {
                 let _ = writeln!(
                     long_desc,
-                    "  {}",
+                    ">>{}",
                     item.into_string("", engine_state.get_config())
-                        .replace('\n', "\n  ")
+                        .replace('\n', "\n>>")
                         .trim()
                 );
             }
