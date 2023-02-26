@@ -10,7 +10,7 @@ def "get help" [cmd: string] {
     | lines
 }
 
-def "extract examples" [] {
+def "extract examples" [--command: string] {
     split list 'Examples:'
     | try {
         get 1
@@ -22,7 +22,7 @@ def "extract examples" [] {
         | enumerate
         | each {|it|
             {
-                command: $cmd
+                command: $command
                 id: $it.index
                 example: ($it.item | skip 1 | str replace "> " "" | find --invert --regex '^>>')
                 output: ($it.item | find --regex '^>>' | str replace --all '^>>' '')
@@ -36,7 +36,7 @@ export def "analyze examples" [] {
 
     get commands
     | each {|cmd|
-        get help $cmd | extract examples
+        get help $cmd | extract examples --command $cmd
     }
     | flatten
     | str trim
