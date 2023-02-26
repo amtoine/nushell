@@ -22,7 +22,7 @@ def "extract examples" [] {
         | enumerate
         | each {|it|
             {
-                comamnd: $cmd
+                command: $cmd
                 id: $it.index
                 example: ($it.item | skip 1 | str replace "> " "" | find --invert --regex '^>>')
                 output: ($it.item | find --regex '^>>' | str replace --all '^>>' '')
