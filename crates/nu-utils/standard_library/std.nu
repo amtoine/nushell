@@ -7,6 +7,8 @@ def _assert [
     }
 }
 
+# make sure a boolean condition is true
+#
 # ```nushell
 # >_ assert ($a == 3)
 # >_ assert ($a != 3)
@@ -24,6 +26,8 @@ export def assert [cond: bool] {
     _assert $cond "condition given to `assert` does not hold"
 }
 
+# make sure two operands of the same type have the same value
+#
 # ```nushell
 # >_ assert_eq $a "a string"
 # Error:
@@ -53,6 +57,8 @@ export def "assert eq" [left: any, right: any] {
     _assert ($left == $right) "left is not equal to right"
 }
 
+# make sure two operands of the same type DO NOT have the same value
+#
 # ```nushell
 # >_ assert_ne $a "a string"
 # Error:
@@ -82,6 +88,8 @@ export def "assert ne" [left: any, right: any] {
     _assert ($left != $right) "left is equal to right"
 }
 
+# execute code branches depending on some input value
+#
 # ```nushell
 # >_ let branches = {
 # )))     1: { print "this is the 1st branch"}
