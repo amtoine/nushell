@@ -12,5 +12,10 @@ $nu.scope.modules
 | each {|cmd|
     help (["std" $cmd] | str join " ")
     | ansi strip
-    | save --force ("crates/nu-utils/standard_library/docs" | path join $cmd | path add extension "md" | str replace --all " " "_")
+    | save --force (
+        "crates/nu-utils/standard_library/docs"
+        | path join $cmd
+        | path add extension "md"
+        | str replace --all " " "_"
+    )
 }
