@@ -1,3 +1,5 @@
+execute code branches depending on some input value
+
 ```nushell
 >_ let branches = {
 )))     1: { print "this is the 1st branch"}

@@ -1,3 +1,5 @@
+make sure two operands of the same type DO NOT have the same value
+
 ```nushell
 >_ assert_ne $a "a string"
 Error:

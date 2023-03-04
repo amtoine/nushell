@@ -1,3 +1,5 @@
+make sure two operands of the same type have the same value
+
 ```nushell
 >_ assert_eq $a "a string"
 Error:
