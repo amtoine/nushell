@@ -1,44 +1,47 @@
-def "get commands" [] {
-    help commands
-    | where command_type == builtin
-    | get name
+def get_commands_with_examples [--verbose (-v): bool = false] {
+    let commands = (
+        $nu.scope.commands
+        | where is_builtin
+        | select name examples
+    )
+
+    if $verbose {
+        print "removing following commands that do not have examples:"
+        $commands | where {|x| ($x.examples | length) == 0} | get name
+    }
+
+    let commands_with_examples = (
+        $commands
+        | where {|x| ($x.examples | length) > 0}
+    )
+
+    $commands_with_examples
 }
 
-def "get help" [cmd: string] {
-    cargo run -- -c $"help ($cmd)"
-    | ansi strip
+def get-true-output-data-length [] {
+    nu -c $"($in | to nuon) | table -e"
     | lines
+    | length
 }
 
-def "extract examples" [--command: string] {
-    split list 'Examples:'
-    | try {
-        get 1
-        | str trim
-        | reverse
-        | skip 1
-        | reverse
-        | split list ""
-        | enumerate
-        | each {|it|
-            {
-                command: $command
-                id: $it.index
-                example: ($it.item | skip 1 | str replace "> " "" | find --invert --regex '^>>')
-                output: ($it.item | find --regex '^>>' | str replace --all '^>>' '')
-            }
+export def "analyze examples" [--verbose (-v): bool] {
+    let commands = (get_commands_with_examples --verbose $verbose)
+
+    let start = (date now)
+
+    let report = (
+        $commands
+        | upsert examples {|x|
+            if $verbose { print -n $"(ansi erase_line)($x.name)\r" }
+            $x.examples
+            | merge (
+                $x.examples.result
+                | each { get-true-output-data-length }
+                | wrap len
+            )
         }
-    }
-}
+    )
 
-export def "analyze examples" [] {
-    cargo build --release
-
-    get commands
-    | each {|cmd|
-        get help $cmd | extract examples --command $cmd
-    }
-    | flatten
-    | str trim
-    | to json
+    if $verbose { print $"done in (ansi yellow_bold)((date now) - $start)(ansi reset)!" }
+    $report
 }
