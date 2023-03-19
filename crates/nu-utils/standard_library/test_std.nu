@@ -35,7 +35,7 @@ export def test_match [] {
     assert ((std match 2 $branches) == -2)
     assert ((std match 3 $branches) == $nothing)
 
-    assert ((std match 1 $branches { 0 }) == -10)
+    assert ((std match 1 $branches { 0 }) == -1)
     assert ((std match 2 $branches { 0 }) == -2)
     assert ((std match 3 $branches { 0 }) == 0)
 }
@@ -58,7 +58,7 @@ export def test_path_add [] {
         std path add "bar" "baz" --append
         assert eq $env.PATH ["foo", "bar", "baz"]
 
-        assert eq (std path add "fooooo" --ret) ["foooo", "foo", "bar", "baz"]
+        assert eq (std path add "fooooo" --ret) ["fooooo", "foo", "bar", "baz"]
         assert eq $env.PATH ["fooooo", "foo", "bar", "baz"]
     }
 }
