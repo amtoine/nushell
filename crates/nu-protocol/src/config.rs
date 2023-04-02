@@ -1564,7 +1564,53 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                     try_string!(key, value);
                 }
                 "shape" => {}
-                "types" => {}
+                "types" => {
+                    if let Value::Record { cols, vals, .. } = value {
+                        for (key, value) in cols.iter().zip(vals) {
+                            match key.as_str() {
+                                "binary" => {
+                                    try_string!(key, value);
+                                }
+                                "block" => {
+                                    try_string!(key, value);
+                                }
+                                "bool" => {}
+                                "cellpath" => {
+                                    try_string!(key, value);
+                                }
+                                "date" => {}
+                                "duration" => {
+                                    try_string!(key, value);
+                                }
+                                "filesize" => {}
+                                "float" => {
+                                    try_string!(key, value);
+                                }
+                                "int" => {
+                                    try_string!(key, value);
+                                }
+                                "list" => {
+                                    try_string!(key, value);
+                                }
+                                "nothing" => {
+                                    try_string!(key, value);
+                                }
+                                "range" => {
+                                    try_string!(key, value);
+                                }
+                                "record" => {
+                                    try_string!(key, value);
+                                }
+                                "string" => {
+                                    try_string!(key, value);
+                                }
+                                _ => invalid!(),
+                            }
+                        }
+                    } else {
+                        invalid!();
+                    }
+                }
                 _ => invalid!(),
             }
         }
