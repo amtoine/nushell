@@ -1520,6 +1520,8 @@ fn create_map(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
 }
 
 fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
+    let mut color_config: HashMap<String, Value> = HashMap::new();
+
     macro_rules! invalid {
         () => {
             return Err(ShellError::UnsupportedConfigValue(
@@ -1531,8 +1533,6 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
     }
 
     if let Value::Record { cols, vals, .. } = value {
-        let mut color_config: HashMap<String, Value> = HashMap::new();
-
         for (key, value) in cols.iter().zip(vals) {
             match key.as_str() {
                 "empty" => {}
@@ -1546,10 +1546,11 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                 _ => invalid!(),
             }
         }
-        Ok(color_config)
     } else {
         invalid!();
     }
+
+    Ok(color_config)
 }
 
 // Parse the hooks to find the blocks to run when the hooks fire
