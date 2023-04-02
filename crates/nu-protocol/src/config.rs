@@ -1619,7 +1619,9 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                                         invalid!();
                                     }
                                 }
-                                "garbage" => {}
+                                "garbage" => {
+                                    try_string!(color_config_key, value);
+                                }
                                 "globpattern" => {
                                     try_string!(color_config_key, value);
                                 }
@@ -1632,7 +1634,9 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                                 "match_pattern" => {
                                     try_string!(color_config_key, value);
                                 }
-                                "matching_brackets" => {}
+                                "matching_brackets" => {
+                                    try_string!(color_config_key, value);
+                                }
                                 "operators" => {
                                     if let Value::Record { cols, vals, .. } = value {
                                         for (key, value) in cols.iter().zip(vals) {
@@ -1724,15 +1728,21 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                                 "block" => {
                                     try_string!(key, value);
                                 }
-                                "bool" => {}
+                                "bool" => {
+                                    try_string!(key, value);
+                                }
                                 "cellpath" => {
                                     try_string!(key, value);
                                 }
-                                "date" => {}
+                                "date" => {
+                                    try_string!(key, value);
+                                }
                                 "duration" => {
                                     try_string!(key, value);
                                 }
-                                "filesize" => {}
+                                "filesize" => {
+                                    try_string!(key, value);
+                                }
                                 "float" => {
                                     try_string!(key, value);
                                 }
