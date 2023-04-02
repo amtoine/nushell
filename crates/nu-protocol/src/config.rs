@@ -1633,7 +1633,27 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                                     try_string!(color_config_key, value);
                                 }
                                 "matching_brackets" => {}
-                                "operators" => {}
+                                "operators" => {
+                                    if let Value::Record { cols, vals, .. } = value {
+                                        for (key, value) in cols.iter().zip(vals) {
+                                            let color_config_key = format!("shape_{key}");
+                                            match key.as_str() {
+                                                "and" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "operator" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "or" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                _ => invalid!(),
+                                            }
+                                        }
+                                    } else {
+                                        invalid!();
+                                    }
+                                }
                                 "pipe" => {
                                     try_string!(color_config_key, value);
                                 }
