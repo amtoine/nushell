@@ -973,8 +973,11 @@ impl Value {
                     }
                     // Misc. options
                     "color_config" => {
-                        if let Ok(map) = parse_color_config(value) {
-                            config.color_config = map;
+                        if let Ok((color_config, color_config_errors)) =
+                            parse_color_config(value, &config)
+                        {
+                            config.color_config = color_config;
+                            errors.append(color_config_errors);
                         } else {
                             invalid!(vals[index].span().ok(), "should be a record");
                             // Reconstruct
@@ -1519,8 +1522,13 @@ fn create_map(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
     Ok(hm)
 }
 
-fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
+fn parse_color_config(
+    value: &Value,
+    config: &Config,
+) -> Result<(HashMap<String, Value>, Vec<ShellError>), ShellError> {
     let mut color_config: HashMap<String, Value> = HashMap::new();
+
+    let mut errors = vec![];
 
     macro_rules! invalid {
         () => {
@@ -1778,7 +1786,7 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
         invalid!();
     }
 
-    Ok(color_config)
+    Ok((color_config, errors))
 }
 
 // Parse the hooks to find the blocks to run when the hooks fire
