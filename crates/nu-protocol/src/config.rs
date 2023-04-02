@@ -1530,13 +1530,19 @@ fn parse_color_config(
 
     let mut errors = vec![];
 
+    // invalid!(vals[index].span().ok(), "should be a record");
+    // // Reconstruct
+    // vals[index] = Value::record_from_hashmap(&config.color_config, *span);
+
     macro_rules! invalid {
-        () => {
-            return Err(ShellError::UnsupportedConfigValue(
-                String::new(),
-                String::new(),
-                Span::unknown(),
-            ))
+        ($span:expr, $msg:literal) => {
+            errors.push(ShellError::GenericError(
+                "Error while applying config changes".into(),
+                format!($msg),
+                $span,
+                Some("This value will be ignored.".into()),
+                vec![],
+            ));
         };
     }
 
@@ -1545,7 +1551,14 @@ fn parse_color_config(
             if let Value::String { .. } = $value {
                 color_config.insert($key.clone(), $value.clone());
             } else {
-                invalid!();
+                invalid!($value.span().ok(), "should be a string");
+                color_config.insert(
+                    $key.clone(),
+                    Value::String {
+                        val: config.$key,
+                        span: $value.span().ok().unwrap_or(Span::unknown()),
+                    },
+                );
             }
         };
     }
