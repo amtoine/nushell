@@ -1563,7 +1563,45 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                 "separator" => {
                     try_string!(key, value);
                 }
-                "shape" => {}
+                "shape" => {
+                    if let Value::Record { cols, vals, .. } = value {
+                        for (key, value) in cols.iter().zip(vals) {
+                            let color_config_key = format!("shape_{key}");
+                            match key.as_str() {
+                                "filesystem" => {}
+                                "functions" => {}
+                                "garbage" => {}
+                                "globpattern" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "internalcall" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "literal" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "match_pattern" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "matching_brackets" => {}
+                                "operators" => {}
+                                "pipe" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "string_interpolation" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "table" => {
+                                    try_string!(color_config_key, value);
+                                }
+                                "types" => {}
+                                _ => invalid!(),
+                            }
+                        }
+                    } else {
+                        invalid!();
+                    }
+                }
                 "types" => {
                     if let Value::Record { cols, vals, .. } = value {
                         for (key, value) in cols.iter().zip(vals) {
