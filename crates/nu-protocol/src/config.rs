@@ -973,7 +973,7 @@ impl Value {
                     }
                     // Misc. options
                     "color_config" => {
-                        if let Ok(map) = create_map(value) {
+                        if let Ok(map) = parse_color_config(value) {
                             config.color_config = map;
                         } else {
                             invalid!(vals[index].span().ok(), "should be a record");
@@ -1517,6 +1517,39 @@ fn create_map(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
     }
 
     Ok(hm)
+}
+
+fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
+    // NOTE: this is a temporary function to quit the parsing early with `early_stop()?`
+    fn early_stop() -> Result<(), ShellError> {
+        Err(ShellError::UnsupportedConfigValue(
+            String::new(),
+            String::new(),
+            Span::unknown(),
+        ))
+    }
+
+    if let Value::Record { cols, vals, .. } = value {
+        let mut color_config: HashMap<String, Value> = HashMap::new();
+
+        for (key, value) in cols.iter().zip(vals) {
+            match key.as_str() {
+                "empty" => {}
+                "header" => {}
+                "hints" => {}
+                "leading_trailing_space_bg" => {}
+                "row_index" => {}
+                "separator" => {}
+                "shape" => {}
+                "types" => {}
+                _ => early_stop()?,
+            }
+        }
+
+        Ok(color_config)
+    } else {
+        Err(early_stop().expect_err("early stop failed"))
+    }
 }
 
 // Parse the hooks to find the blocks to run when the hooks fire
