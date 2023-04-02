@@ -1532,15 +1532,37 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
         };
     }
 
+    macro_rules! try_string {
+        ($key:ident, $value:ident) => {
+            if let Value::String { .. } = $value {
+                color_config.insert($key.clone(), $value.clone());
+            } else {
+                invalid!();
+            }
+        };
+    }
+
     if let Value::Record { cols, vals, .. } = value {
         for (key, value) in cols.iter().zip(vals) {
             match key.as_str() {
-                "empty" => {}
-                "header" => {}
-                "hints" => {}
-                "leading_trailing_space_bg" => {}
-                "row_index" => {}
-                "separator" => {}
+                "empty" => {
+                    try_string!(key, value);
+                }
+                "header" => {
+                    try_string!(key, value);
+                }
+                "hints" => {
+                    try_string!(key, value);
+                }
+                "leading_trailing_space_bg" => {
+                    try_string!(key, value);
+                }
+                "row_index" => {
+                    try_string!(key, value);
+                }
+                "separator" => {
+                    try_string!(key, value);
+                }
                 "shape" => {}
                 "types" => {}
                 _ => invalid!(),
