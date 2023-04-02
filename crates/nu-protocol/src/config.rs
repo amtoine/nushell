@@ -1520,13 +1520,14 @@ fn create_map(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
 }
 
 fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellError> {
-    // NOTE: this is a temporary function to quit the parsing early with `early_stop()?`
-    fn early_stop() -> Result<(), ShellError> {
-        Err(ShellError::UnsupportedConfigValue(
-            String::new(),
-            String::new(),
-            Span::unknown(),
-        ))
+    macro_rules! invalid {
+        () => {
+            return Err(ShellError::UnsupportedConfigValue(
+                String::new(),
+                String::new(),
+                Span::unknown(),
+            ))
+        };
     }
 
     if let Value::Record { cols, vals, .. } = value {
@@ -1542,13 +1543,12 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                 "separator" => {}
                 "shape" => {}
                 "types" => {}
-                _ => early_stop()?,
+                _ => invalid!(),
             }
         }
-
         Ok(color_config)
     } else {
-        Err(early_stop().expect_err("early stop failed"))
+        invalid!();
     }
 }
 
