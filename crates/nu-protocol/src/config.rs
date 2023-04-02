@@ -1568,8 +1568,57 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                         for (key, value) in cols.iter().zip(vals) {
                             let color_config_key = format!("shape_{key}");
                             match key.as_str() {
-                                "filesystem" => {}
-                                "functions" => {}
+                                "filesystem" => {
+                                    if let Value::Record { cols, vals, .. } = value {
+                                        for (key, value) in cols.iter().zip(vals) {
+                                            let color_config_key = format!("shape_{key}");
+                                            match key.as_str() {
+                                                "filepath" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "directory" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                _ => invalid!(),
+                                            }
+                                        }
+                                    } else {
+                                        invalid!();
+                                    }
+                                }
+                                "functions" => {
+                                    if let Value::Record { cols, vals, .. } = value {
+                                        for (key, value) in cols.iter().zip(vals) {
+                                            let color_config_key = format!("shape_{key}");
+                                            match key.as_str() {
+                                                "custom" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "external" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "externalarg" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "flag" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "redirection" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "signature" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                "variable" => {
+                                                    try_string!(color_config_key, value);
+                                                }
+                                                _ => invalid!(),
+                                            }
+                                        }
+                                    } else {
+                                        invalid!();
+                                    }
+                                }
                                 "garbage" => {}
                                 "globpattern" => {
                                     try_string!(color_config_key, value);
@@ -1594,7 +1643,50 @@ fn parse_color_config(value: &Value) -> Result<HashMap<String, Value>, ShellErro
                                 "table" => {
                                     try_string!(color_config_key, value);
                                 }
-                                "types" => {}
+                                "types" => {
+                                    if let Value::Record { cols, vals, .. } = value {
+                                        for (key, value) in cols.iter().zip(vals) {
+                                            match key.as_str() {
+                                                "binary" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "block" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "bool" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "datetime" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "float" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "int" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "list" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "nothing" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "range" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "record" => {
+                                                    try_string!(key, value);
+                                                }
+                                                "string" => {
+                                                    try_string!(key, value);
+                                                }
+                                                _ => invalid!(),
+                                            }
+                                        }
+                                    } else {
+                                        invalid!();
+                                    }
+                                }
                                 _ => invalid!(),
                             }
                         }
