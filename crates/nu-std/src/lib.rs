@@ -69,6 +69,20 @@ pub fn load_standard_library(
 
         let mut working_set = StateWorkingSet::new(engine_state);
 
+        let modules = vec![
+            ("assert", include_str!("../lib/assert.nu")),
+            ("dirs", include_str!("../lib/dirs.nu")),
+            ("help", include_str!("../lib/help.nu")),
+            ("log", include_str!("../lib/log.nu")),
+            ("xml", include_str!("../lib/xml.nu")),
+        ];
+
+        for (name, content) in modules {
+            let (module, comments) =
+                add_file(&mut working_set, &name.to_string(), content.as_bytes());
+            working_set.add_module(&name, module, comments);
+        }
+
         let (module, comments) = add_file(
             &mut working_set,
             &name,
