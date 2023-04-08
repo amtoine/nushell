@@ -93,11 +93,7 @@ pub fn load_standard_library(
             working_set.add_module(&name, module, comments);
         }
 
-        let (module, comments) = add_file(
-            &mut working_set,
-            &name,
-            content.as_bytes(),
-        );
+        let (module, comments) = add_file(&mut working_set, &name, content.as_bytes());
         load_prelude(&mut working_set, prelude, &module);
         working_set.add_module(&name, module, comments);
 
