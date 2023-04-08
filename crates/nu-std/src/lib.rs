@@ -15,13 +15,13 @@ fn add_file(
         parse_module_block(working_set, Span::new(start, end), name.as_bytes());
 
     if let Some(err) = working_set.parse_errors.first() {
-        report_error(&working_set, err);
+        report_error(working_set, err);
     }
 
-    parse(working_set, Some(&name), content, true);
+    parse(working_set, Some(name), content, true);
 
     if let Some(err) = working_set.parse_errors.first() {
-        report_error(&working_set, err);
+        report_error(working_set, err);
     }
 
     (module, comments)
@@ -90,7 +90,7 @@ pub fn load_standard_library(
         for (name, content) in submodules {
             let (module, comments) =
                 add_file(&mut working_set, &name.to_string(), content.as_bytes());
-            working_set.add_module(&name, module, comments);
+            working_set.add_module(name, module, comments);
         }
 
         let (module, comments) = add_file(&mut working_set, &name, content.as_bytes());
