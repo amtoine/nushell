@@ -66,6 +66,7 @@ pub fn load_standard_library(
 ) -> Result<(), miette::ErrReport> {
     let delta = {
         let name = "std".to_string();
+        let content = include_str!("../lib/mod.nu");
 
         let submodules = vec![
             ("assert", include_str!("../lib/assert.nu")),
@@ -95,7 +96,7 @@ pub fn load_standard_library(
         let (module, comments) = add_file(
             &mut working_set,
             &name,
-            include_str!("../lib/mod.nu").as_bytes(),
+            content.as_bytes(),
         );
         load_prelude(&mut working_set, prelude, &module);
         working_set.add_module(&name, module, comments);
