@@ -67,7 +67,7 @@ pub fn load_standard_library(
     let delta = {
         let name = "std".to_string();
 
-        let modules = vec![
+        let submodules = vec![
             ("assert", include_str!("../lib/assert.nu")),
             ("dirs", include_str!("../lib/dirs.nu")),
             ("help", include_str!("../lib/help.nu")),
@@ -86,7 +86,7 @@ pub fn load_standard_library(
 
         let mut working_set = StateWorkingSet::new(engine_state);
 
-        for (name, content) in modules {
+        for (name, content) in submodules {
             let (module, comments) =
                 add_file(&mut working_set, &name.to_string(), content.as_bytes());
             working_set.add_module(&name, module, comments);
