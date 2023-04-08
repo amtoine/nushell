@@ -67,8 +67,6 @@ pub fn load_standard_library(
     let delta = {
         let name = "std".to_string();
 
-        let mut working_set = StateWorkingSet::new(engine_state);
-
         let modules = vec![
             ("assert", include_str!("../lib/assert.nu")),
             ("dirs", include_str!("../lib/dirs.nu")),
@@ -76,6 +74,17 @@ pub fn load_standard_library(
             ("log", include_str!("../lib/log.nu")),
             ("xml", include_str!("../lib/xml.nu")),
         ];
+
+        let prelude = vec![
+            ("std help", "help"),
+            ("std help commands", "help commands"),
+            ("std help aliases", "help aliases"),
+            ("std help modules", "help modules"),
+            ("std help externs", "help externs"),
+            ("std help operators", "help operators"),
+        ];
+
+        let mut working_set = StateWorkingSet::new(engine_state);
 
         for (name, content) in modules {
             let (module, comments) =
@@ -88,18 +97,7 @@ pub fn load_standard_library(
             &name,
             include_str!("../lib/mod.nu").as_bytes(),
         );
-
-        let prelude = vec![
-            ("std help", "help"),
-            ("std help commands", "help commands"),
-            ("std help aliases", "help aliases"),
-            ("std help modules", "help modules"),
-            ("std help externs", "help externs"),
-            ("std help operators", "help operators"),
-        ];
-
         load_prelude(&mut working_set, prelude, &module);
-
         working_set.add_module(&name, module, comments);
 
         working_set.render()
