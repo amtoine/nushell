@@ -495,162 +495,140 @@ export def "help operators" [
 }
 
 def show-command [command: record] {
-    if not ($command.usage? | is-empty) {
-        print $command.usage
-    }
-    if not ($command.extra_usage? | is-empty) {
-        print ""
-        print $command.extra_usage
-    }
+    let a = (if not ($command.usage? | is-empty) {
+        $command.usage
+    })
 
-    if not ($command.search_terms? | is-empty) {
-        print ""
-        print-help-header -n "Search terms"
-        print $" ($command.search_terms)"
-    }
+    let b = (if not ($command.extra_usage? | is-empty) {
+        $"\n($command.extra_usage)"
+    })
 
-    if not ($command.module_name? | is-empty) {
-        print ""
-        print-help-header -n "Module"
-        print $" ($command.module_name)"
-    }
+    let c = (if not ($command.search_terms? | is-empty) {
+        $"\n(print-help-header -n 'Search terms') ($command.search_terms)"
+    })
 
-    if not ($command.category? | is-empty) {
-        print ""
-        print-help-header -n "Category"
-        print $" ($command.category)"
-    }
+    let d = (if not ($command.module_name? | is-empty) {
+        $"\n(print-help-header -n 'Module') ($command.module_name)"
+    })
 
-    print ""
-    print "This command:"
-    if ($command.creates_scope) {
-        print $"- (ansi cyan)does create(ansi reset) a scope."
+    let e = (if not ($command.category? | is-empty) {
+        $"\n(print-help-header -n 'Category') ($command.category)"
+    })
+
+    let f = $"\n This command:"
+
+    let g = (if ($command.creates_scope) {
+        $"- (ansi cyan)does create(ansi reset) a scope."
     } else {
-        print $"- (ansi cyan)does not create(ansi reset) a scope."
-    }
-    if ($command.is_builtin) {
-        print $"- (ansi cyan)is(ansi reset) a built-in command."
+        $"- (ansi cyan)does not create(ansi reset) a scope."
+    })
+    let h = (if ($command.is_builtin) {
+        $"- (ansi cyan)is(ansi reset) a built-in command."
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a built-in command."
-    }
-    if ($command.is_sub) {
-        print $"- (ansi cyan)is(ansi reset) a subcommand."
+        $"- (ansi cyan)is not(ansi reset) a built-in command."
+    })
+    let i = (if ($command.is_sub) {
+        $"- (ansi cyan)is(ansi reset) a subcommand."
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a subcommand."
-    }
-    if ($command.is_plugin) {
-        print $"- (ansi cyan)is part(ansi reset) of a plugin."
+        $"- (ansi cyan)is not(ansi reset) a subcommand."
+    })
+    let j = (if ($command.is_plugin) {
+        $"- (ansi cyan)is part(ansi reset) of a plugin."
     } else {
-        print $"- (ansi cyan)is not part(ansi reset) of a plugin."
-    }
-    if ($command.is_custom) {
-        print $"- (ansi cyan)is(ansi reset) a custom command."
+        $"- (ansi cyan)is not part(ansi reset) of a plugin."
+    })
+    let k = (if ($command.is_custom) {
+        $"- (ansi cyan)is(ansi reset) a custom command."
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a custom command."
-    }
-    if ($command.is_keyword) {
-        print $"- (ansi cyan)is(ansi reset) a keyword."
+        $"- (ansi cyan)is not(ansi reset) a custom command."
+    })
+    let l = (if ($command.is_keyword) {
+        $"- (ansi cyan)is(ansi reset) a keyword."
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a keyword."
-    }
+        $"- (ansi cyan)is not(ansi reset) a keyword."
+    })
 
     let signatures = ($command.signatures | transpose | get column1)
 
-    if not ($signatures | is-empty) {
+    let m = (if not ($signatures | is-empty) {
         let parameters = ($signatures | get 0 | where parameter_type != input and parameter_type != output)
 
         let positionals = ($parameters | where parameter_type == positional and parameter_type != rest)
         let flags = ($parameters | where parameter_type != positional and parameter_type != rest)
 
-        print ""
-        print-help-header "Usage"
-        print -n "  > "
-        print -n $"($command.name) "
-        if not ($flags | is-empty) {
-            print -n $"{flags} "
-        }
-        for param in $positionals {
-            print -n $"<($param.parameter_name)> "
-        }
-        print ""
-    }
+        let m1 = $"\n(print-help-header 'Usage')  > ($command.name)"
+        let m2 = (if not ($flags | is-empty) { $'{flags} '})
+        let m3 = (for param in $positionals { $"<($param.parameter_name)> "})
+        let m4 = "\n"
+        [$m1 $m2 $m3 $m4] | str join
+    })
 
     let subcommands = ($nu.scope.commands | where name =~ $"^($command.name) " | select name usage)
-    if not ($subcommands | is-empty) {
-        print ""
-        print-help-header "Subcommands"
-        for subcommand in $subcommands {
-            print $"  (ansi teal)($subcommand.name)(ansi reset) - ($subcommand.usage)"
-        }
-    }
+    let n = (if not ($subcommands | is-empty) {
+        $"\n(print-help-header 'Subcommands')
+        (for subcommand in $subcommands {
+            $'  (ansi teal)($subcommand.name)(ansi reset) - ($subcommand.usage)'
+        })"
+    })
 
-    if not ($signatures | is-empty) {
+    let o = (if not ($signatures | is-empty) {
         let parameters = ($signatures | get 0 | where parameter_type != input and parameter_type != output)
 
         let positionals = ($parameters | where parameter_type == positional and parameter_type != rest)
         let flags = ($parameters | where parameter_type != positional and parameter_type != rest)
         let is_rest = (not ($parameters | where parameter_type == rest | is-empty))
 
-        print ""
-        print-help-header "Flags"
-        print $"  (ansi teal)-h(ansi reset), (ansi teal)--help(ansi reset) - Display the help message for this command"
-        for flag in $flags {
-            print -n $"  (ansi teal)-($flag.short_flag)(ansi reset), (ansi teal)--($flag.parameter_name)(ansi reset)"
-            if not ($flag.syntax_shape | is-empty) {
-                print -n $" <(ansi light_blue)($flag.syntax_shape)(ansi reset)>"
-            }
-            print $" - ($flag.description)"
-        }
+        let o1 = $"\nFlags  (ansi teal)-h(ansi reset), (ansi teal)--help(ansi reset) - Display the help message for this command"
+        let o2 = (for flag in $flags {
+            $"  (ansi teal)-($flag.short_flag)(ansi reset), (ansi teal)--($flag.parameter_name)(ansi reset)(if not ($flag.syntax_shape | is-empty) {
+                $' <(ansi light_blue)($flag.syntax_shape)(ansi reset)>'}) $' - ($flag.description)')"
+        })
 
-        print ""
-        print-help-header "Signatures"
-        for signature in $signatures {
+        let o3 = $"\n(print-help-header "Signatures")"
+
+        let o4 = (for signature in $signatures {
            let input = ($signature | where parameter_type == input | get 0)
            let output = ($signature | where parameter_type == output | get 0)
 
-           print -n $"  <($input.syntax_shape)> | ($command.name)"
+           $"  <($input.syntax_shape)> | ($command.name)(
            for positional in $positionals {
-               print -n $" <($positional.syntax_shape)>"
-           }
-           print $" -> <($output.syntax_shape)>"
-        }
+               $' <($positional.syntax_shape)>'
+           })$' -> <($output.syntax_shape)>'"
+        })
 
-        if (not ($positionals | is-empty)) or $is_rest {
-            print ""
-            print-help-header "Parameters"
+        let o5 = (if (not ($positionals | is-empty)) or $is_rest {
+            $"\n(print-help-header 'Parameters')(
             for positional in $positionals {
-                print -n "  "
                 if ($positional.is_optional) {
-                    print -n "(optional) "
+                    '(optional) '
                 }
-                print $"(ansi teal)($positional.parameter_name)(ansi reset) <(ansi light_blue)($positional.syntax_shape)(ansi reset)>: ($positional.description)"
-            }
+                $'(ansi teal)($positional.parameter_name)(ansi reset) <(ansi light_blue)($positional.syntax_shape)(ansi reset)>: ($positional.description)'
+            })
 
-            if $is_rest {
+            (if $is_rest {
                 let rest = ($parameters | where parameter_type == rest | get 0)
-                print $"  ...(ansi teal)rest(ansi reset) <(ansi light_blue)($rest.syntax_shape)(ansi reset)>: ($rest.description)"
-            }
-        }
-    }
+                $'  ...(ansi teal)rest(ansi reset) <(ansi light_blue)($rest.syntax_shape)(ansi reset)>: ($rest.description)'
+            })"
+        })
 
-    if not ($command.examples | is-empty) {
-        print ""
-        print-help-header -n "Examples"
+        [$o1 $o2 $o3 $o4 $o5] | str join
+    })
+
+    let p = (if not ($command.examples | is-empty) {
+        $"\n(print-help-header -n 'Examples')(
         for example in $command.examples {
-            print ""
-            print $"  ($example.description)"
-            print $"  > ($example.example | nu-highlight)"
-            if not ($example.result | is-empty) {
+            $'\n  ($example.description)  > ($example.example | nu-highlight)'
+            (if not ($example.result | is-empty) {
                 for line in (
                     $example.result | table | if ($example.result | describe) == "binary" { str join } else { lines }
                 ) {
-                    print $"  ($line)"
+                    $'  ($line)'
                 }
-            }
-        }
-    }
+            })
+        })"
+    })
 
-    print ""
+    [$a $b $c $d $e $f $g $h $i $j $k $l $signatures $m $subcommands $n $o $p] | str join
 }
 
 # Show help on nushell commands.
