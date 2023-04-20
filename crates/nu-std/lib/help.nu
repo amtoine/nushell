@@ -108,18 +108,20 @@ def build-help-header [
 }
 
 def show-module [module: record] {
+    mut module_page = ""
+
     if not ($module.usage? | is-empty) {
-        print $module.usage
-        print ""
+        $module_page = $module_page ++ $module.usage ++ (char newline)
+        $module_page = $module_page ++ (char newline)
     }
 
-    build-help-header -n "Module"
-    print $" ($module.name)"
-    print ""
+    $module_page = $module_page ++ (build-help-header -n "Module")
+    $module_page = $module_page ++ $module.name ++ (char newline)
+    $module_page = $module_page ++ (char newline)
 
     if not ($module.commands? | is-empty) {
-        build-help-header "Exported commands"
-        print -n "    "
+        $module_page = $module_page ++ (build-help-header "Exported commands")
+        $module_page = $module_page ++ "    "
 
         let commands_string = (
             $module.commands
@@ -129,21 +131,24 @@ def show-module [module: record] {
             | str join ", "
         )
 
-        print $commands_string
-        print ""
+        $module_page = $module_page ++ $commands_string ++ (char newline)
+        $module_page = $module_page ++ (char newline)
     }
 
     if not ($module.aliases? | is-empty) {
-        build-help-header -n "Exported aliases:"
-        print $module.aliases
-        print ""
+        $module_page = $module_page ++ (build-help-header -n "Exported aliases:")
+        $module_page = $module_page ++ $module.aliases ++ (char newline)
+        $module_page = $module_page ++ (char newline)
     }
 
     if ($module.env_block? | is-empty) {
-        print $"This module (ansi cyan)does not export(ansi reset) environment."
+        $module_page = $module_page ++ $"This module (ansi cyan)does not export(ansi reset) environment." ++ (char newline)
     } else {
-        print $"This module (ansi cyan)exports(ansi reset) environment."
+        $module_page = $module_page ++ $"This module (ansi cyan)exports(ansi reset) environment." ++ (char newline)
+        $module_page = $module_page ++ $"(view source $module.env_block)" ++ (char newline)
     }
+
+    print $module_page
 }
 
 # Show help on nushell modules.
@@ -262,16 +267,20 @@ export def "help modules" [
 }
 
 def show-alias [alias: record] {
+    mut alias_page = ""
+
     if not ($alias.usage? | is-empty) {
-        print $alias.usage
-        print ""
+        $alias_page = $alias_page ++ $alias.usage ++ (char newline)
+        $alias_page = $alias_page ++ (char newline)
     }
 
-    build-help-header -n "Alias"
-    print $" ($alias.name)"
-    print ""
-    build-help-header "Expansion"
-    print $"  ($alias.expansion)"
+    $alias_page = $alias_page ++ (build-help-header -n "Alias")
+    $alias_page = $alias_page ++ $" ($alias.name)" ++ (char newline)
+    $alias_page = $alias_page ++ (char newline)
+    $alias_page = $alias_page ++ (build-help-header "Expansion")
+    $alias_page = $alias_page ++ $"  ($alias.expansion)" ++ (char newline)
+
+    print $alias_page
 }
 
 # Show help on nushell aliases.
@@ -372,13 +381,17 @@ export def "help aliases" [
 }
 
 def show-extern [extern: record] {
+    mut extern_page = ""
+
     if not ($extern.usage? | is-empty) {
-        print $extern.usage
-        print ""
+        $extern_page = $extern_page ++ $extern.usage ++ (char newline)
+        $extern_page = $extern_page ++ (char newline)
     }
 
-    build-help-header -n "Extern"
-    print $" ($extern.name)"
+    $extern_page = $extern_page ++ (build-help-header -n "Extern") ++ (char newline)
+    $extern_page = $extern_page ++ $" ($extern.name)" ++ (char newline)
+
+    print $extern_page
 }
 
 # Show help on nushell externs.
@@ -418,15 +431,19 @@ export def "help externs" [
 }
 
 def show-operator [operator: record] {
-    build-help-header "Description"
-    print $"    ($operator.description)"
-    print ""
-    build-help-header -n "Operator"
-    print ($" ($operator.name) (char lparen)(ansi cyan_bold)($operator.operator)(ansi reset)(char rparen)")
-    build-help-header -n "Type"
-    print $" ($operator.type)"
-    build-help-header -n "Precedence"
-    print $" ($operator.precedence)"
+    mut operator_page = ""
+
+    $operator_page = $operator_page ++ (build-help-header "Description") ++ (char newline)
+    $operator_page = $operator_page ++ $"    ($operator.description)" ++ (char newline)
+    $operator_page = $operator_page ++ (char newline)
+    $operator_page = $operator_page ++ (build-help-header -n "Operator") ++ (char newline)
+    $operator_page = $operator_page ++ ($" ($operator.name) (char lparen)(ansi cyan_bold)($operator.operator)(ansi reset)(char rparen)") ++ (char newline)
+    $operator_page = $operator_page ++ (build-help-header -n "Type") ++ (char newline)
+    $operator_page = $operator_page ++ $" ($operator.type)" ++ (char newline)
+    $operator_page = $operator_page ++ (build-help-header -n "Precedence") ++ (char newline)
+    $operator_page = $operator_page ++ $" ($operator.precedence)" ++ (char newline)
+
+    print $operator_page
 }
 
 # Show help on nushell operators.
@@ -490,63 +507,65 @@ export def "help operators" [
 }
 
 def show-command [command: record] {
+    mut help_page = ""
+
     if not ($command.usage? | is-empty) {
-        print $command.usage
+        $help_page = $help_page ++ $command.usage ++ (char newline)
     }
     if not ($command.extra_usage? | is-empty) {
-        print ""
-        print $command.extra_usage
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ $command.extra_usage ++ (char newline)
     }
 
     if not ($command.search_terms? | is-empty) {
-        print ""
-        build-help-header -n "Search terms"
-        print $" ($command.search_terms)"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header -n "Search terms") ++ (char newline)
+        $help_page = $help_page ++ $" ($command.search_terms)" ++ (char newline)
     }
 
     if not ($command.module_name? | is-empty) {
-        print ""
-        build-help-header -n "Module"
-        print $" ($command.module_name)"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header -n "Module") ++ (char newline)
+        $help_page = $help_page ++ $" ($command.module_name)" ++ (char newline)
     }
 
     if not ($command.category? | is-empty) {
-        print ""
-        build-help-header -n "Category"
-        print $" ($command.category)"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header -n "Category") ++ (char newline)
+        $help_page = $help_page ++ $" ($command.category)" ++ (char newline)
     }
 
-    print ""
-    print "This command:"
+    $help_page = $help_page ++ (char newline)
+    $help_page = $help_page ++ "This command:" ++ (char newline)
     if ($command.creates_scope) {
-        print $"- (ansi cyan)does create(ansi reset) a scope."
+        $help_page = $help_page ++ $"- (ansi cyan)does create(ansi reset) a scope." ++ (char newline)
     } else {
-        print $"- (ansi cyan)does not create(ansi reset) a scope."
+        $help_page = $help_page ++ $"- (ansi cyan)does not create(ansi reset) a scope." ++ (char newline)
     }
     if ($command.is_builtin) {
-        print $"- (ansi cyan)is(ansi reset) a built-in command."
+        $help_page = $help_page ++ $"- (ansi cyan)is(ansi reset) a built-in command." ++ (char newline)
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a built-in command."
+        $help_page = $help_page ++ $"- (ansi cyan)is not(ansi reset) a built-in command." ++ (char newline)
     }
     if ($command.is_sub) {
-        print $"- (ansi cyan)is(ansi reset) a subcommand."
+        $help_page = $help_page ++ $"- (ansi cyan)is(ansi reset) a subcommand." ++ (char newline)
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a subcommand."
+        $help_page = $help_page ++ $"- (ansi cyan)is not(ansi reset) a subcommand." ++ (char newline)
     }
     if ($command.is_plugin) {
-        print $"- (ansi cyan)is part(ansi reset) of a plugin."
+        $help_page = $help_page ++ $"- (ansi cyan)is part(ansi reset) of a plugin." ++ (char newline)
     } else {
-        print $"- (ansi cyan)is not part(ansi reset) of a plugin."
+        $help_page = $help_page ++ $"- (ansi cyan)is not part(ansi reset) of a plugin." ++ (char newline)
     }
     if ($command.is_custom) {
-        print $"- (ansi cyan)is(ansi reset) a custom command."
+        $help_page = $help_page ++ $"- (ansi cyan)is(ansi reset) a custom command." ++ (char newline)
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a custom command."
+        $help_page = $help_page ++ $"- (ansi cyan)is not(ansi reset) a custom command." ++ (char newline)
     }
     if ($command.is_keyword) {
-        print $"- (ansi cyan)is(ansi reset) a keyword."
+        $help_page = $help_page ++ $"- (ansi cyan)is(ansi reset) a keyword." ++ (char newline)
     } else {
-        print $"- (ansi cyan)is not(ansi reset) a keyword."
+        $help_page = $help_page ++ $"- (ansi cyan)is not(ansi reset) a keyword." ++ (char newline)
     }
 
     let signatures = ($command.signatures | transpose | get column1)
@@ -557,25 +576,25 @@ def show-command [command: record] {
         let positionals = ($parameters | where parameter_type == positional and parameter_type != rest)
         let flags = ($parameters | where parameter_type != positional and parameter_type != rest)
 
-        print ""
-        build-help-header "Usage"
-        print -n "  > "
-        print -n $"($command.name) "
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header "Usage") ++ (char newline)
+        $help_page = $help_page ++ "  > "
+        $help_page = $help_page ++ $"($command.name) "
         if not ($flags | is-empty) {
-            print -n $"{flags} "
+            $help_page = $help_page ++ $"{flags} "
         }
         for param in $positionals {
-            print -n $"<($param.parameter_name)> "
+            $help_page = $help_page ++ $"<($param.parameter_name)> "
         }
-        print ""
+        $help_page = $help_page ++ (char newline)
     }
 
     let subcommands = ($nu.scope.commands | where name =~ $"^($command.name) " | select name usage)
     if not ($subcommands | is-empty) {
-        print ""
-        build-help-header "Subcommands"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header "Subcommands") ++ (char newline)
         for subcommand in $subcommands {
-            print $"  (ansi teal)($subcommand.name)(ansi reset) - ($subcommand.usage)"
+            $help_page = $help_page ++ $"  (ansi teal)($subcommand.name)(ansi reset) - ($subcommand.usage)" ++ (char newline)
         }
     }
 
@@ -586,66 +605,68 @@ def show-command [command: record] {
         let flags = ($parameters | where parameter_type != positional and parameter_type != rest)
         let is_rest = (not ($parameters | where parameter_type == rest | is-empty))
 
-        print ""
-        build-help-header "Flags"
-        print $"  (ansi teal)-h(ansi reset), (ansi teal)--help(ansi reset) - Display the help message for this command"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header "Flags") ++ (char newline)
+        $help_page = $help_page ++ $"  (ansi teal)-h(ansi reset), (ansi teal)--help(ansi reset) - Display the help message for this command" ++ (char newline)
         for flag in $flags {
-            print -n $"  (ansi teal)-($flag.short_flag)(ansi reset), (ansi teal)--($flag.parameter_name)(ansi reset)"
+            $help_page = $help_page ++ $"  (ansi teal)-($flag.short_flag)(ansi reset), (ansi teal)--($flag.parameter_name)(ansi reset)"
             if not ($flag.syntax_shape | is-empty) {
-                print -n $" <(ansi light_blue)($flag.syntax_shape)(ansi reset)>"
+                $help_page = $help_page ++ $" <(ansi light_blue)($flag.syntax_shape)(ansi reset)>"
             }
-            print $" - ($flag.description)"
+            $help_page = $help_page ++ $" - ($flag.description)" ++ (char newline)
         }
 
-        print ""
-        build-help-header "Signatures"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header "Signatures") ++ (char newline)
         for signature in $signatures {
            let input = ($signature | where parameter_type == input | get 0)
            let output = ($signature | where parameter_type == output | get 0)
 
-           print -n $"  <($input.syntax_shape)> | ($command.name)"
+           $help_page = $help_page ++ $"  <($input.syntax_shape)> | ($command.name)"
            for positional in $positionals {
-               print -n $" <($positional.syntax_shape)>"
+               $help_page = $help_page ++ $" <($positional.syntax_shape)>"
            }
-           print $" -> <($output.syntax_shape)>"
+           $help_page = $help_page ++ $" -> <($output.syntax_shape)>" ++ (char newline)
         }
 
         if (not ($positionals | is-empty)) or $is_rest {
-            print ""
-            build-help-header "Parameters"
+            $help_page = $help_page ++ (char newline)
+            $help_page = $help_page ++ (build-help-header "Parameters") ++ (char newline)
             for positional in $positionals {
-                print -n "  "
+                $help_page = $help_page ++ "  "
                 if ($positional.is_optional) {
-                    print -n "(optional) "
+                    $help_page = $help_page ++ "(optional) "
                 }
-                print $"(ansi teal)($positional.parameter_name)(ansi reset) <(ansi light_blue)($positional.syntax_shape)(ansi reset)>: ($positional.description)"
+                $help_page = $help_page ++ $"(ansi teal)($positional.parameter_name)(ansi reset) <(ansi light_blue)($positional.syntax_shape)(ansi reset)>: ($positional.description)" ++ (char newline)
             }
 
             if $is_rest {
                 let rest = ($parameters | where parameter_type == rest | get 0)
-                print $"  ...(ansi teal)rest(ansi reset) <(ansi light_blue)($rest.syntax_shape)(ansi reset)>: ($rest.description)"
+                $help_page = $help_page ++ $"  ...(ansi teal)rest(ansi reset) <(ansi light_blue)($rest.syntax_shape)(ansi reset)>: ($rest.description)" ++ (char newline)
             }
         }
     }
 
     if not ($command.examples | is-empty) {
-        print ""
-        build-help-header -n "Examples"
+        $help_page = $help_page ++ (char newline)
+        $help_page = $help_page ++ (build-help-header -n "Examples") ++ (char newline)
         for example in $command.examples {
-            print ""
-            print $"  ($example.description)"
-            print $"  > ($example.example | nu-highlight)"
+            $help_page = $help_page ++ (char newline)
+            $help_page = $help_page ++ $"  ($example.description)" ++ (char newline)
+            $help_page = $help_page ++ $"  > ($example.example | nu-highlight)" ++ (char newline)
             if not ($example.result | is-empty) {
                 for line in (
                     $example.result | table | if ($example.result | describe) == "binary" { str join } else { lines }
                 ) {
-                    print $"  ($line)"
+                    $help_page = $help_page ++ $"  ($line)" ++ (char newline)
                 }
             }
         }
     }
 
-    print ""
+    $help_page = $help_page ++ (char newline)
+
+    print $help_page
 }
 
 # Show help on nushell commands.
