@@ -68,13 +68,12 @@ def build-operator-page [operator: record] {
 #
 # Examples:
 #     search for string in operators names
-#     > help operators --find Bit
+#     > help operators --find And
 #     ╭───┬─────────┬──────────┬────────┬───────────────────────────────────────┬────────────╮
 #     │ # │  type   │ operator │  name  │              description              │ precedence │
 #     ├───┼─────────┼──────────┼────────┼───────────────────────────────────────┼────────────┤
 #     │ 0 │ Bitwise │ bit-and  │ BitAnd │ Performs a bitwise AND on two values. │         75 │
-#     │ 1 │ Bitwise │ bit-or   │ BitOr  │ Performs a bitwise OR on two values.  │         60 │
-#     │ 2 │ Bitwise │ bit-xor  │ BitXor │ Performs a bitwise XOR on two values. │         70 │
+#     │ 1 │ Boolean │ and      │ And    │ Checks if two values are true.        │         50 │
 #     ╰───┴─────────┴──────────┴────────┴───────────────────────────────────────┴────────────╯
 #
 #     search help for single operator
@@ -82,18 +81,21 @@ def build-operator-page [operator: record] {
 #     Description:
 #         Checks if a value does not match a regular expression.
 #
-#     Operator: NotRegexMatch (!~)
-#     Type: Comparison
-#     Precedence: 80
+#     Operator:
+#       NotRegexMatch (!~)
+#     Type:
+#       Comparison
+#     Precedence:
+#       80
 #
 #     search for an operator that does not exist
-#     > help operator "does not exist"
+#     > help operators "does not exist"
 #     Error:
 #       × std::help::operator_not_found
 #        ╭─[entry #21:1:1]
-#      1 │ help operator "does not exist"
-#        ·               ────────┬───────
-#        ·                       ╰── operator not found
+#      1 │ help operators "does not exist"
+#        ·                ────────┬───────
+#        ·                        ╰── operator not found
 #        ╰────
 export def main [
     ...operator: string@"nu-complete list-operators"  # the name of operator to get help on
