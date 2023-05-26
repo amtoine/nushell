@@ -6,11 +6,6 @@ export use aliases.nu
 export use externs.nu
 export use commands.nu
 
-def pretty-cmd [] {
-    let cmd = $in
-    $"(ansi default_dimmed)(ansi default_italic)($cmd)(ansi reset)"
-}
-
 # Display help information about different parts of Nushell.
 #
 # `help word` searches for "word" in commands, aliases and modules, in that order.
@@ -29,10 +24,10 @@ export def main [
         print $"Welcome to Nushell.
 
 Here are some tips to help you get started.
-  * ('help -h' | pretty-cmd) or ('help help' | pretty-cmd) - show available ('help' | pretty-cmd) subcommands and examples
-  * ('help commands' | pretty-cmd) - list all available commands
-  * ('help <name>' | pretty-cmd) - display help about a particular command, alias, or module
-  * ('help --find <text to search>' | pretty-cmd) - search through all help commands table
+  * ('help -h' | nu-highlight) or ('help help' | nu-highlight) - show available ('help' | nu-highlight) subcommands and examples
+  * ('help commands' | nu-highlight) - list all available commands
+  * ('help <name>' | nu-highlight) - display help about a particular command, alias, or module
+  * ('help --find <text to search>' | nu-highlight) - search through all help commands table
 
 Nushell works on the idea of a "(ansi default_italic)pipeline(ansi reset)". Pipelines are commands connected with the '|' character.
 Each stage in the pipeline works together to load, parse, and display information to you.
