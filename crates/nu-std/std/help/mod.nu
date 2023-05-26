@@ -19,9 +19,6 @@ def pretty-cmd [] {
 #   show help for single command, alias, or module
 #   > help match
 #
-#   show help for single sub-command, alias, or module
-#   > help str lpad
-#
 #   search for string in command names, usage and search terms
 #   > help --find char
 export def main [
