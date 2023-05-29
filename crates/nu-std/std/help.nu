@@ -751,7 +751,7 @@ You can also learn more at (ansi default_italic)(ansi light_cyan_underline)https
 
     let target_item = ($item | str join " ")
 
-    let commands = (try { commands $target_item --find $find })
+    let commands = (try { help commands $target_item --find $find })
     if not ($commands | is-empty) { return $commands }
 
     let aliases = (try { aliases $target_item --find $find })

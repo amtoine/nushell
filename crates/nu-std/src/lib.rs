@@ -57,6 +57,14 @@ use std dirs [
     p
     dexit
 ]
+
+use std [
+    "help aliases"
+    "help modules"
+    "help operators"
+]
+
+use std help help
 "#
         );
 
