@@ -151,17 +151,24 @@ path."#
 fn relative_to(path: &Path, span: Span, args: &Arguments) -> Value {
     let lhs = expand_to_real_path(path);
     let rhs = expand_to_real_path(&args.path.item);
+
     match lhs.strip_prefix(&rhs) {
         Ok(p) => Value::string(p.to_string_lossy(), span),
-        Err(e) => Value::error(
-            ShellError::CantConvert {
-                to_type: e.to_string(),
-                from_type: "string".into(),
+        Err(_) => match rhs.strip_prefix(&lhs) {
+            Ok(p) => Value::string(p.to_string_lossy(), span),
+            Err(e) => Value::error(
+                // NOTE: because all expanded paths should have the same root, it should always be
+                // possible to strip the prefix in one way or the other, making this error here
+                // impossible :crossed_fingers:
+                ShellError::CantConvert {
+                    to_type: e.to_string(),
+                    from_type: "string".into(),
+                    span,
+                    help: None,
+                },
                 span,
-                help: None,
-            },
-            span,
-        ),
+            ),
+        },
     }
 }
 
