@@ -2957,6 +2957,38 @@ pub fn parse_overlay_hide(working_set: &mut StateWorkingSet, call: Box<Call>) ->
     pipeline
 }
 
+fn parse_pipelined_rvalue(
+    working_set: &mut StateWorkingSet,
+    spans: &[Span],
+    span: (usize, &Span),
+) -> Expression {
+    let (tokens, parse_error) = lex(
+        working_set.get_span_contents(nu_protocol::span(&spans[(span.0 + 1)..])),
+        spans[span.0 + 1].start,
+        &[],
+        &[],
+        true,
+    );
+
+    if let Some(parse_error) = parse_error {
+        working_set.error(parse_error);
+    }
+
+    let rvalue_span = nu_protocol::span(&spans[(span.0 + 1)..]);
+    let rvalue_block = parse_block(working_set, &tokens, rvalue_span, false, true);
+
+    let output_type = rvalue_block.output_type();
+
+    let block_id = working_set.add_block(Arc::new(rvalue_block));
+
+    Expression {
+        expr: Expr::Block(block_id),
+        span: rvalue_span,
+        ty: output_type,
+        custom_completion: None,
+    }
+}
+
 pub fn parse_let(working_set: &mut StateWorkingSet, spans: &[Span]) -> Pipeline {
     trace!("parsing: let");
 
@@ -2974,31 +3006,7 @@ pub fn parse_let(working_set: &mut StateWorkingSet, spans: &[Span]) -> Pipeline 
                 // https://github.com/nushell/nushell/issues/9596, let = if $
                 // let x = 'f', = at least start from index 2
                 if item == b"=" && spans.len() > (span.0 + 1) && span.0 > 1 {
-                    let (tokens, parse_error) = lex(
-                        working_set.get_span_contents(nu_protocol::span(&spans[(span.0 + 1)..])),
-                        spans[span.0 + 1].start,
-                        &[],
-                        &[],
-                        true,
-                    );
-
-                    if let Some(parse_error) = parse_error {
-                        working_set.error(parse_error)
-                    }
-
-                    let rvalue_span = nu_protocol::span(&spans[(span.0 + 1)..]);
-                    let rvalue_block = parse_block(working_set, &tokens, rvalue_span, false, true);
-
-                    let output_type = rvalue_block.output_type();
-
-                    let block_id = working_set.add_block(Arc::new(rvalue_block));
-
-                    let rvalue = Expression {
-                        expr: Expr::Block(block_id),
-                        span: rvalue_span,
-                        ty: output_type,
-                        custom_completion: None,
-                    };
+                    let rvalue = parse_pipelined_rvalue(working_set, spans, span);
 
                     let mut idx = 0;
                     let (lvalue, explicit_type) =
@@ -3092,31 +3100,7 @@ pub fn parse_const(working_set: &mut StateWorkingSet, spans: &[Span]) -> Pipelin
                 let item = working_set.get_span_contents(*span.1);
                 // const x = 'f', = at least start from index 2
                 if item == b"=" && spans.len() > (span.0 + 1) && span.0 > 1 {
-                    let (tokens, parse_error) = lex(
-                        working_set.get_span_contents(nu_protocol::span(&spans[(span.0 + 1)..])),
-                        spans[span.0 + 1].start,
-                        &[],
-                        &[],
-                        true,
-                    );
-
-                    if let Some(parse_error) = parse_error {
-                        working_set.error(parse_error)
-                    }
-
-                    let rvalue_span = nu_protocol::span(&spans[(span.0 + 1)..]);
-                    let rvalue_block = parse_block(working_set, &tokens, rvalue_span, false, true);
-
-                    let output_type = rvalue_block.output_type();
-
-                    let block_id = working_set.add_block(Arc::new(rvalue_block));
-
-                    let rvalue = Expression {
-                        expr: Expr::Block(block_id),
-                        span: rvalue_span,
-                        ty: output_type,
-                        custom_completion: None,
-                    };
+                    let rvalue = parse_pipelined_rvalue(working_set, spans, span);
 
                     let mut idx = 0;
 
@@ -3248,31 +3232,7 @@ pub fn parse_mut(working_set: &mut StateWorkingSet, spans: &[Span]) -> Pipeline 
                 let item = working_set.get_span_contents(*span.1);
                 // mut x = 'f', = at least start from index 2
                 if item == b"=" && spans.len() > (span.0 + 1) && span.0 > 1 {
-                    let (tokens, parse_error) = lex(
-                        working_set.get_span_contents(nu_protocol::span(&spans[(span.0 + 1)..])),
-                        spans[span.0 + 1].start,
-                        &[],
-                        &[],
-                        true,
-                    );
-
-                    if let Some(parse_error) = parse_error {
-                        working_set.error(parse_error);
-                    }
-
-                    let rvalue_span = nu_protocol::span(&spans[(span.0 + 1)..]);
-                    let rvalue_block = parse_block(working_set, &tokens, rvalue_span, false, true);
-
-                    let output_type = rvalue_block.output_type();
-
-                    let block_id = working_set.add_block(Arc::new(rvalue_block));
-
-                    let rvalue = Expression {
-                        expr: Expr::Block(block_id),
-                        span: rvalue_span,
-                        ty: output_type,
-                        custom_completion: None,
-                    };
+                    let rvalue = parse_pipelined_rvalue(working_set, spans, span);
 
                     let mut idx = 0;
 
