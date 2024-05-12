@@ -5611,8 +5611,13 @@ pub fn parse_pipeline(
         // Special case: allow `let` and `mut` to consume the whole pipeline, eg) `let abc = "foo" | str length`
         if let Some(&first) = pipeline.commands[0].parts.first() {
             let first = working_set.get_span_contents(first);
-            if first == b"let" || first == b"mut" {
-                let name = if first == b"let" { "let" } else { "mut" };
+            if first == b"let" || first == b"mut" || first == b"const" {
+                let name = match first {
+                    b"let" => "let",
+                    b"mut" => "mut",
+                    b"const" => "const",
+                    _ => unreachable!(),
+                };
                 let mut new_command = LiteCommand {
                     comments: vec![],
                     parts: pipeline.commands[0].parts.clone(),
